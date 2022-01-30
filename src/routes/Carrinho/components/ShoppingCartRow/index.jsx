@@ -1,17 +1,17 @@
 import { IconButton, Image, Td, Tr } from '@chakra-ui/react';
-import { numberToBRL } from 'src/helpers/Format';
 import { MdRemoveShoppingCart } from 'react-icons/md';
+import { numberToBRL } from 'src/helpers/Format';
 
 export default function ShoppingCartRow(props) {
   const {
-    produto: {
-      uuid,
+    product: {
       image_url,
       name,
       price: { value, unit },
       amount,
       total,
     },
+    deleteOnClick,
   } = props;
   return (
     <Tr>
@@ -29,7 +29,7 @@ export default function ShoppingCartRow(props) {
           aria-label="Remover produto."
           icon={<MdRemoveShoppingCart />}
           colorScheme="red"
-          onClick={() => handleDeleteOnClick(uuid)}
+          onClick={deleteOnClick}
         />
       </Td>
     </Tr>

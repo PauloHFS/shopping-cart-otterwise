@@ -1,18 +1,9 @@
-import { useState, useEffect } from 'react';
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Image,
-  IconButton,
-} from '@chakra-ui/react';
-import { MdRemoveShoppingCart } from 'react-icons/md';
+import { Table, Tbody, Tfoot, Th, Thead, Tr } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { numberToBRL } from 'src/helpers/Format';
 import * as Carrinho from 'src/services/carrinho';
 import { getProdutoByUUID } from 'src/services/produtos';
-import { numberToBRL } from 'src/helpers/Format';
+import ShoppingCartRow from '../ShoppingCartRow';
 
 export default function ShoppingCartTable() {
   const [Produtos, setProdutos] = useState([]);
@@ -49,38 +40,32 @@ export default function ShoppingCartTable() {
         </Tr>
       </Thead>
       <Tbody>
-        {!!Produtos
-          ? Produtos.map(
-              ({
-                uuid,
-                image_url,
-                name,
-                price: { value, unit },
-                amount,
-                total,
-              }) => (
-                <Tr>
-                  <Td>
-                    <Image src={image_url} maxW={24} />
-                  </Td>
-                  <Td>{name}</Td>
-                  <Td>{numberToBRL(value)}</Td>
-                  <Td>
-                    {amount.toFixed(3)} ({unit})
-                  </Td>
-                  <Td>{numberToBRL(total)}</Td>
-                  <Td>
-                    <IconButton
-                      icon={<MdRemoveShoppingCart />}
-                      colorScheme="red"
-                      onClick={() => handleDeleteOnClick(uuid)}
-                    />
-                  </Td>
-                </Tr>
-              )
-            )
-          : null}
+        {!!Produtos &&
+          Produtos.map(produto => (
+            <ShoppingCartRow
+              key={produto.uuid}
+              product={produto}
+              deleteOnClick={() => handleDeleteOnClick(produto.uuid)}
+            />
+          ))}
       </Tbody>
+      <Tfoot>
+        <Tr>
+          <Th></Th>
+          <Th></Th>
+          <Th></Th>
+          <Th></Th>
+          <Th>
+            {numberToBRL(
+              Produtos.reduce(
+                (previous, current) => previous + current.total,
+                0
+              )
+            )}
+          </Th>
+          <Th></Th>
+        </Tr>
+      </Tfoot>
     </Table>
   );
 }
