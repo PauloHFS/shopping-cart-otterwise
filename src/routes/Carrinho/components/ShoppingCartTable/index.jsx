@@ -1,32 +1,29 @@
-import { Table, Tbody, Tfoot, Th, Thead, Tr } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import {
+  Table,
+  Tbody,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+  Td,
+  Image,
+  IconButton,
+} from '@chakra-ui/react';
 import { numberToBRL } from 'src/helpers/Format';
-import * as Carrinho from 'src/services/carrinho';
-import { getProdutoByUUID } from 'src/services/produtos';
-import ShoppingCartRow from '../ShoppingCartRow';
+import * as CarrinhoService from 'src/services/carrinho';
+import { useCarrinho } from 'src/context/carrinho-context';
+import { MdRemoveShoppingCart } from 'react-icons/md';
 
 export default function ShoppingCartTable() {
-  const [Produtos, setProdutos] = useState([]);
-
-  useEffect(() => {
-    const carrinho = Carrinho.getCarrinho();
-    const produtos = carrinho.map(({ uuid, amount }) => {
-      const produto = getProdutoByUUID(uuid);
-
-      return {
-        ...produto,
-        amount: amount,
-        total: amount * produto.price.value,
-      };
-    });
-    setProdutos(produtos);
-  }, []);
+  const [Carrinho, dispatch] = useCarrinho();
 
   const handleDeleteOnClick = uuid => {
-    Carrinho.removeProduto(uuid);
-    setProdutos(Produtos.filter(produto => produto.uuid !== uuid));
+    dispatch({
+      type: 'REMOVE',
+      uuid: uuid,
+    });
+    CarrinhoService.removeProduto(uuid);
   };
-
   return (
     <Table variant="simple">
       <Thead>
@@ -40,14 +37,40 @@ export default function ShoppingCartTable() {
         </Tr>
       </Thead>
       <Tbody>
-        {!!Produtos &&
-          Produtos.map(produto => (
-            <ShoppingCartRow
-              key={produto.uuid}
-              product={produto}
-              deleteOnClick={() => handleDeleteOnClick(produto.uuid)}
-            />
-          ))}
+        {!!Carrinho &&
+          Carrinho.map(
+            ({
+              uuid,
+              image_url,
+              name,
+              price: { value, unit },
+              amount,
+              total,
+            }) => (
+              <Tr key={uuid}>
+                <Td>
+                  <Image src={image_url} maxW={24} />
+                </Td>
+                <Td>{name}</Td>
+                <Td>
+                  {numberToBRL(value)} / {unit}
+                </Td>
+                <Td>
+                  {amount.toFixed(unit === 'kg' ? 3 : 0)}{' '}
+                  {unit === 'kg' && 'kg'}
+                </Td>
+                <Td>{numberToBRL(total)}</Td>
+                <Td>
+                  <IconButton
+                    aria-label="Remover produto."
+                    icon={<MdRemoveShoppingCart />}
+                    colorScheme="red"
+                    onClick={() => handleDeleteOnClick(uuid)}
+                  />
+                </Td>
+              </Tr>
+            )
+          )}
       </Tbody>
       <Tfoot>
         <Tr>
@@ -57,7 +80,7 @@ export default function ShoppingCartTable() {
           <Th></Th>
           <Th>
             {numberToBRL(
-              Produtos.reduce(
+              Carrinho.reduce(
                 (previous, current) => previous + current.total,
                 0
               )

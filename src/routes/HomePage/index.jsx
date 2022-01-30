@@ -21,6 +21,8 @@ import { numberToBRL } from 'src/helpers/Format';
 import * as CarrinhoService from 'src/services/carrinho';
 import * as ProdutoService from 'src/services/produtos';
 import ProductBox from './components/ProductBox';
+import { MdCheckCircleOutline } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 export default function HomePage() {
   const [Produtos, setProdutos] = useState([]);
@@ -36,9 +38,18 @@ export default function HomePage() {
   const handleBuyOnClick = ({ uuid, amount }) => {
     const {
       name,
-      price: { value },
+      price: { value, unit },
     } = ProdutoService.getProdutoByUUID(uuid);
     setCarrinho([...Carrinho, { uuid, name, value, amount }]);
+    toast(`Adicionando ${amount} ${unit} de ${name} ao carrinho`, {
+      position: 'bottom-center',
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   const handleFinalizePurchaseOnClick = () => {
@@ -101,7 +112,10 @@ export default function HomePage() {
               <DrawerBody>
                 <Stack>
                   {Carrinho.map(({ uuid, name, value, amount }) => (
-                    <HStack key={uuid} justifyContent="space-between">
+                    <HStack
+                      key={uuid + String(value * Math.random())}
+                      justifyContent="space-between"
+                    >
                       <Text>{name}</Text>
                       <Text>{numberToBRL(value * amount)}</Text>
                     </HStack>
@@ -120,11 +134,12 @@ export default function HomePage() {
 
             <DrawerFooter>
               <Button
-                colorScheme="green"
+                leftIcon={<MdCheckCircleOutline />}
+                colorScheme="blue"
                 onClick={() => handleFinalizePurchaseOnClick()}
                 isDisabled={Carrinho.length === 0}
               >
-                Finalizar compra
+                Checkout
               </Button>
             </DrawerFooter>
           </DrawerContent>
