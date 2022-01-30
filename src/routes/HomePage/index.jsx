@@ -18,6 +18,7 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import { MdShoppingCart } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { numberToBRL } from 'src/helpers/Format';
+import * as CarrinhoService from 'src/services/carrinho';
 import * as ProdutoService from 'src/services/produtos';
 import ProductBox from './components/ProductBox';
 
@@ -41,7 +42,9 @@ export default function HomePage() {
   };
 
   const handleFinalizePurchaseOnClick = () => {
-    //TODO: armazenar produtos no localStorage
+    CarrinhoService.setCarrinho(
+      Carrinho.map(({ uuid, amount }) => ({ uuid, amount }))
+    );
     navigate('/carrinho');
   };
 
