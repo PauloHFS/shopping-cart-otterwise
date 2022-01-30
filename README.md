@@ -1,1 +1,1 @@
-# frutaria-otterwise
+# shopping-cart-otterwise
