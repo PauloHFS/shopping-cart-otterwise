@@ -22,7 +22,7 @@ import { MdNavigateBefore, MdOutlineDone, MdAttachMoney } from 'react-icons/md';
 import { numberToBRL } from 'src/helpers/Format';
 
 export default function Carrinho() {
-  const [Carrinho, dispatch] = useCarrinho();
+  const { carrinho, dispatch } = useCarrinho();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -45,7 +45,7 @@ export default function Carrinho() {
     <Flex maxWidth="992px" mr="auto" ml="auto" mt="10" flexDirection="column">
       <ShoppingCartTable />
       <Center>
-        {Carrinho.length === 0 ? (
+        {carrinho.length === 0 ? (
           <Button
             leftIcon={<MdNavigateBefore />}
             colorScheme="blue"
@@ -74,7 +74,7 @@ export default function Carrinho() {
               <Text>
                 Total:{' '}
                 {numberToBRL(
-                  Carrinho.reduce((previous, { total }) => previous + total, 0)
+                  carrinho.reduce((previous, { total }) => previous + total, 0)
                 )}
               </Text>
             </Center>

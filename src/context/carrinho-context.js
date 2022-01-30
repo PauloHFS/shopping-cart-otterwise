@@ -6,7 +6,7 @@ export const CarrinhoProvider = ({ children }) => {
   const [carrinho, dispatch] = useReducer(carrinhoReducer, []);
 
   return (
-    <CarrinhoContext.Provider value={[carrinho, dispatch]}>
+    <CarrinhoContext.Provider value={{ carrinho, dispatch }}>
       {children}
     </CarrinhoContext.Provider>
   );
@@ -22,7 +22,7 @@ const carrinhoReducer = (carrinho, action) => {
       return [...action.carrinho];
     case 'UPDATE':
       return carrinho.map(produto =>
-        produto.uuid === action.uuid ? action.produto : produto
+        produto.uuid === action.produto.uuid ? action.produto : produto
       );
     case 'REMOVE':
       return carrinho.filter(({ uuid }) => uuid !== action.uuid);
